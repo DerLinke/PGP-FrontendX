@@ -1,0 +1,10 @@
+GEMINI.md
+.antigravity/
+.antigravity-ide/
+.antigravitycli/
+.vscode/
+*.code-workspace
+build/
+dist/
+/tmp/
+*.bak
