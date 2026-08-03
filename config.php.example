@@ -1,0 +1,10 @@
+<?php
+// config.php
+// Trage hier deine Datenbankdaten ein
+
+$DB_CONFIG = [
+    'host' => 'localhost',
+    'dbname' => 'pgp_frontendx',
+    'user' => 'root',
+    'pass' => ''
+];

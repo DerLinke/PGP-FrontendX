@@ -1,14 +1,6 @@
 <?php
 session_start();
 
-// Config for Open Source Release
-// Users should change these credentials in their own deployment
-$CONFIG = [
-    'ADMIN_USER' => 'mail@dan.jetzt',
-    // Hash for 'BallaBalla-123'
-    'ADMIN_HASH' => '$2y$12$EgfiChsRJk/SR9OqNRHpvuoLEL1yh8.a9cT.dfcyeeTDgrPh8NXZS'
-];
-
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: index.php");
@@ -18,14 +10,37 @@ if (isset($_GET['logout'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $user = $_POST['username'] ?? '';
     $pass = $_POST['password'] ?? '';
+    $error = '';
     
-    if ($user === $CONFIG['ADMIN_USER'] && password_verify($pass, $CONFIG['ADMIN_HASH'])) {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['username'] = $user;
-        header("Location: index.php");
-        exit;
+    if (file_exists('config.php')) {
+        require 'config.php';
+        
+        try {
+            // Unterstützt PostgreSQL (Cosmos) oder MySQL (lokal)
+            $dsn = (isset($DB_CONFIG['driver']) ? $DB_CONFIG['driver'] : 'mysql') . 
+                   ":host=" . $DB_CONFIG['host'] . 
+                   ";dbname=" . $DB_CONFIG['dbname'];
+                   
+            $pdo = new PDO($dsn, $DB_CONFIG['user'], $DB_CONFIG['pass']);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->execute([$user]);
+            $db_user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($db_user && password_verify($pass, $db_user['password_hash'])) {
+                $_SESSION['logged_in'] = true;
+                $_SESSION['username'] = $user;
+                header("Location: index.php");
+                exit;
+            } else {
+                $error = "Falscher Benutzername oder Passwort!";
+            }
+        } catch(PDOException $e) {
+            $error = "Datenbankfehler: Bitte config prüfen.";
+        }
     } else {
-        $error = "Falscher Benutzername oder Passwort!";
+        $error = "config.php fehlt! Bitte setup prüfen.";
     }
 }
 
