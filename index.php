@@ -1,3 +1,7 @@
+<?php
+require_once 'auth.php';
+require_login();
+?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -12,12 +16,15 @@
 </head>
 <body>
     <div class="glass-container">
-        <header>
-            <div class="logo">
-                <img src="src/logo.png" alt="PGP-FrontendX Logo" width="40">
-                <h1>PGP-FrontendX</h1>
+        <header style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex-grow: 1; text-align: center;">
+                <div class="logo">
+                    <img src="src/logo.png" alt="PGP-FrontendX Logo" width="40">
+                    <h1>PGP-FrontendX</h1>
+                </div>
+                <p>100% lokale Verschlüsselung im Browser.</p>
             </div>
-            <p>100% lokale Verschlüsselung im Browser.</p>
+            <a href="?logout=1" style="color: #e74c3c; text-decoration: none; font-size: 12px; border: 1px solid rgba(231,76,60,0.3); padding: 5px 10px; border-radius: 5px; transition: all 0.2s;">Logout</a>
         </header>
 
         <main>
